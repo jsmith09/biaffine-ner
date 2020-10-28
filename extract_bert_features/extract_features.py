@@ -28,12 +28,12 @@ from tqdm import tqdm
 
 import modeling
 import tokenization
-import tensorflow as tf
+import tensorflow.compact.v1 as tf
 import numpy as np
 
 from data import process_example
 
-flags = tf.compat.v1.flags
+flags = tf.flags
 
 FLAGS = flags.FLAGS
 
@@ -336,4 +336,4 @@ if __name__ == "__main__":
     flags.mark_flag_as_required("bert_config_file")
     flags.mark_flag_as_required("init_checkpoint")
     flags.mark_flag_as_required("output_file")
-    tf.compat.v1.app.run()
+    tf.app.run()
