@@ -28,12 +28,12 @@ from tqdm import tqdm
 
 import modeling
 import tokenization
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import numpy as np
 
 from data import process_example
 
-flags = tf.flags
+flags = tf.compat.v1.flags
 
 FLAGS = flags.FLAGS
 
