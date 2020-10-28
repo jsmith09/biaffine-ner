@@ -28,7 +28,7 @@ from tqdm import tqdm
 
 import modeling
 import tokenization
-import tensorflow.compact.v1 as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 
 from data import process_example
