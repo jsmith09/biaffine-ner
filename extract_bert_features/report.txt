@@ -1,0 +1,36 @@
+TensorFlow 2.0 Upgrade Script
+-----------------------------
+Converted 1 files
+Detected 1 issues that require attention
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+File: extract_features.py
+--------------------------------------------------------------------------------
+extract_features.py:37:8: ERROR: Using member tf.flags in deprecated module tf.flags. tf.flags and tf.app.flags have been removed, please use the argparse or absl modules if you need command line parsing.
+================================================================================
+Detailed log follows:
+
+================================================================================
+--------------------------------------------------------------------------------
+Processing file 'extract_features.py'
+ outputting to 'extract_bert_features.py'
+--------------------------------------------------------------------------------
+
+32:0: INFO: Renamed 'tf.disable_v2_behavior' to 'tf.compat.v1.disable_v2_behavior'
+37:8: ERROR: Using member tf.flags in deprecated module tf.flags. tf.flags and tf.app.flags have been removed, please use the argparse or absl modules if you need command line parsing.
+148:16: INFO: Renamed 'tf.trainable_variables' to 'tf.compat.v1.trainable_variables'
+156:16: INFO: Renamed 'tf.train.init_from_checkpoint' to 'tf.compat.v1.train.init_from_checkpoint'
+157:23: INFO: Renamed 'tf.train.Scaffold' to 'tf.compat.v1.train.Scaffold'
+161:12: INFO: Renamed 'tf.train.init_from_checkpoint' to 'tf.compat.v1.train.init_from_checkpoint'
+163:8: INFO: Renamed 'tf.logging.info' to 'tf.compat.v1.logging.info'
+168:12: INFO: Renamed 'tf.logging.info' to 'tf.compat.v1.logging.info'
+181:22: INFO: Renamed 'tf.contrib.tpu.TPUEstimatorSpec' to 'tf.compat.v1.estimator.tpu.TPUEstimatorSpec'
+257:4: INFO: Renamed 'tf.logging.set_verbosity' to 'tf.compat.v1.logging.set_verbosity'
+257:29: INFO: Renamed 'tf.logging.INFO' to 'tf.compat.v1.logging.INFO'
+266:18: INFO: Renamed 'tf.contrib.tpu.InputPipelineConfig' to 'tf.compat.v1.estimator.tpu.InputPipelineConfig'
+267:17: INFO: Renamed 'tf.contrib.tpu.RunConfig' to 'tf.compat.v1.estimator.tpu.RunConfig'
+269:19: INFO: Renamed 'tf.contrib.tpu.TPUConfig' to 'tf.compat.v1.estimator.tpu.TPUConfig'
+295:16: INFO: Renamed 'tf.contrib.tpu.TPUEstimator' to 'tf.compat.v1.estimator.tpu.TPUEstimator'
+340:4: INFO: Renamed 'tf.app.run' to 'tf.compat.v1.app.run'
+--------------------------------------------------------------------------------
+

@@ -28,8 +28,8 @@ from tqdm import tqdm
 
 import modeling
 import tokenization
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
+tf.compat.v1.disable_v2_behavior()
 import numpy as np
 
 from data import process_example
@@ -145,7 +145,7 @@ def model_fn_builder(bert_config, init_checkpoint, layer_indexes, use_tpu,
         if mode != tf.estimator.ModeKeys.PREDICT:
             raise ValueError("Only PREDICT modes are supported: %s" % (mode))
 
-        tvars = tf.trainable_variables()
+        tvars = tf.compat.v1.trainable_variables()
         scaffold_fn = None
         (assignment_map,
          initialized_variable_names) = modeling.get_assignment_map_from_checkpoint(
@@ -153,19 +153,19 @@ def model_fn_builder(bert_config, init_checkpoint, layer_indexes, use_tpu,
         if use_tpu:
 
             def tpu_scaffold():
-                tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
-                return tf.train.Scaffold()
+                tf.compat.v1.train.init_from_checkpoint(init_checkpoint, assignment_map)
+                return tf.compat.v1.train.Scaffold()
 
             scaffold_fn = tpu_scaffold
         else:
-            tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
+            tf.compat.v1.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
-        tf.logging.info("**** Trainable Variables ****")
+        tf.compat.v1.logging.info("**** Trainable Variables ****")
         for var in tvars:
             init_string = ""
             if var.name in initialized_variable_names:
                 init_string = ", *INIT_FROM_CKPT*"
-            tf.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
+            tf.compat.v1.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
                             init_string)
 
         all_layers = model.get_all_encoder_layers()
@@ -178,7 +178,7 @@ def model_fn_builder(bert_config, init_checkpoint, layer_indexes, use_tpu,
         for (i, layer_index) in enumerate(layer_indexes):
             predictions["layer_output_%d" % i] = all_layers[layer_index]
 
-        output_spec = tf.estimator.tpu.TPUEstimatorSpec(
+        output_spec = tf.compat.v1.estimator.tpu.TPUEstimatorSpec(
             mode=mode, predictions=predictions, scaffold_fn=scaffold_fn)
         return output_spec
 
@@ -254,7 +254,7 @@ def convert_examples_to_features(examples, window_size, stride, tokenizer):
 
 
 def main(_):
-    tf.logging.set_verbosity(tf.logging.INFO)
+    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
 
     layer_indexes = [int(x) for x in FLAGS.layers.split(",")]
 
@@ -263,10 +263,10 @@ def main(_):
     tokenizer = tokenization.FullTokenizer(
         vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
 
-    is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
-    run_config = tf.contrib.tpu.RunConfig(
+    is_per_host = tf.compat.v1.estimator.tpu.InputPipelineConfig.PER_HOST_V2
+    run_config = tf.compat.v1.estimator.tpu.RunConfig(
         master=FLAGS.master,
-        tpu_config=tf.contrib.tpu.TPUConfig(
+        tpu_config=tf.compat.v1.estimator.tpu.TPUConfig(
             num_shards=FLAGS.num_tpu_cores,
             per_host_input_for_training=is_per_host))
 
@@ -292,7 +292,7 @@ def main(_):
 
     # If TPU is not available, this will fall back to normal Estimator on CPU
     # or GPU.
-    estimator = tf.contrib.tpu.TPUEstimator(
+    estimator = tf.compat.v1.estimator.tpu.TPUEstimator(
         use_tpu=FLAGS.use_tpu,
         model_fn=model_fn,
         config=run_config,
@@ -337,4 +337,4 @@ if __name__ == "__main__":
     flags.mark_flag_as_required("bert_config_file")
     flags.mark_flag_as_required("init_checkpoint")
     flags.mark_flag_as_required("output_file")
-    tf.app.run()
+    tf.compat.v1.app.run()
