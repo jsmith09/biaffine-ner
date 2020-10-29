@@ -263,10 +263,10 @@ def main(_):
     tokenizer = tokenization.FullTokenizer(
         vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
 
-    is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
-    run_config = tf.contrib.tpu.RunConfig(
+    is_per_host = tf.estimator.tpu.InputPipelineConfig.PER_HOST_V2
+    run_config = tf.estimator.tpu.RunConfig(
         master=FLAGS.master,
-        tpu_config=tf.contrib.tpu.TPUConfig(
+        tpu_config=tf.estimator.tpu.TPUConfig(
             num_shards=FLAGS.num_tpu_cores,
             per_host_input_for_training=is_per_host))
 
@@ -292,7 +292,7 @@ def main(_):
 
     # If TPU is not available, this will fall back to normal Estimator on CPU
     # or GPU.
-    estimator = tf.contrib.tpu.TPUEstimator(
+    estimator = tf.estimator.tpu.TPUEstimator(
         use_tpu=FLAGS.use_tpu,
         model_fn=model_fn,
         config=run_config,
