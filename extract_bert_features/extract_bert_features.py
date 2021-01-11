@@ -325,6 +325,7 @@ def main(_):
                                           dtype=np.float32)
 
                 dset = writer[dataset_key]
+                print(dset)
                 for j, layer_index in enumerate(layer_indexes):
                     layer_output = result["layer_output_%d" % j]
                     dset[token_index, :, j] = layer_output[output_index]
