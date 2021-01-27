@@ -358,3 +358,24 @@ class BiaffineNERModel():
     summary_dict["Mention precision"] = m_p
 
     return util.make_summary(summary_dict), m_f1
+    
+  def toxic_span_evaluate(self, session, is_final_test=False):
+    self.load_eval_data()
+
+    tp,fn,fp = 0,0,0
+    start_time = time.time()
+    num_words = 0
+    sub_tp,sub_fn,sub_fp = [0] * self.num_types,[0]*self.num_types, [0]*self.num_types
+
+    is_flat_ner = 'flat_ner' in self.config and self.config['flat_ner']
+
+    for example_num, (tensorized_example, example) in enumerate(self.eval_data):
+      feed_dict = {i:t for i,t in zip(self.input_tensors, tensorized_example)}
+      candidate_ner_scores = session.run(self.predictions, feed_dict=feed_dict)
+
+      num_words += sum(len(tok) for tok in example["sentences"])
+
+
+      gold_ners = set([(sid,s,e, self.ner_maps[t]) for sid, ner in enumerate(example['ners']) for s,e,t in ner])
+      pred_ners = self.get_pred_ner(example["sentences"], candidate_ner_scores,is_flat_ner)
+      print(pred_ners)
