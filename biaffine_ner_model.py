@@ -105,8 +105,9 @@ class BiaffineNERModel():
       lm_emb[i, :s.shape[0], :, :] = s
     return lm_emb
 
-  def tensorize_example(self, example, is_training):
-    ners = example["ners"]
+  def tensorize_example(self, example, is_training, is_predict=False):
+    if !is_predict:
+        ners = example["ners"]
     sentences = example["sentences"]
 
     max_sentence_length = max(len(s) for s in sentences)
@@ -292,7 +293,16 @@ class BiaffineNERModel():
 
       print("Loaded {} eval examples.".format(len(self.eval_data)))
 
+  def load_predict_data(self):
+    if self.eval_data is None:
+      def load_line(line):
+        example = json.loads(line)
+        return self.tensorize_example(example, is_training=False, is_predict=True), example
 
+      with open(self.config["eval_path"]) as f:
+        self.eval_data = [load_line(l) for l in f.readlines()]
+
+      print("Loaded {} eval examples.".format(len(self.eval_data)))
 
   def evaluate(self, session, is_final_test=False):
     self.load_eval_data()
@@ -360,7 +370,7 @@ class BiaffineNERModel():
     return util.make_summary(summary_dict), m_f1
     
   def toxic_span_predict(self, session, is_final_test=False):
-    self.load_eval_data()
+    self.load_predict_data()
 
     tp,fn,fp = 0,0,0
     start_time = time.time()
@@ -376,6 +386,5 @@ class BiaffineNERModel():
       num_words += sum(len(tok) for tok in example["text"])
 
 
-      gold_ners = set([(sid,s,e, self.ner_maps[t]) for sid, ner in enumerate(example['ners']) for s,e,t in ner])
-      pred_ners = self.get_pred_ner(example["sentences"], candidate_ner_scores,is_flat_ner)
+      pred_ners = self.get_pred_ner(example["text"], candidate_ner_scores,is_flat_ner)
       print(pred_ners)
