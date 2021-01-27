@@ -359,7 +359,7 @@ class BiaffineNERModel():
 
     return util.make_summary(summary_dict), m_f1
     
-  def toxic_span_evaluate(self, session, is_final_test=False):
+  def toxic_span_predict(self, session, is_final_test=False):
     self.load_eval_data()
 
     tp,fn,fp = 0,0,0

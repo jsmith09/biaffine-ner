@@ -23,4 +23,4 @@ if __name__ == "__main__":
   session_config.allow_soft_placement = True
   with tf.Session(config=session_config) as session:
     model.restore(session)
-    model.predict(session,True)
+    model.toxic_spans_predict(session,True)
