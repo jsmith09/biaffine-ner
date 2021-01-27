@@ -106,9 +106,12 @@ class BiaffineNERModel():
     return lm_emb
 
   def tensorize_example(self, example, is_training, is_predict=False):
-    if !is_predict:
+    if not is_predict:
         ners = example["ners"]
-    sentences = example["sentences"]
+    if is_predict:
+      sentences = example["text"]
+    else:
+      sentences = example["sentences"]
 
     max_sentence_length = max(len(s) for s in sentences)
     max_word_length = max(max(max(len(w) for w in s) for s in sentences), max(self.config["filter_widths"]))
@@ -130,7 +133,10 @@ class BiaffineNERModel():
 
     tokens = np.array(tokens)
 
-    doc_key = example["doc_key"]
+    if is_predict:
+      doc_key = example["observation_number"]
+    else:
+      doc_key = example["doc_key"]
 
     lm_emb = self.load_lm_embeddings(doc_key)
 
@@ -264,6 +270,7 @@ class BiaffineNERModel():
       if type > 0:
         sid, s,e = candidates[i]
         top_spans[sid].append((s,e,type,span_scores[i,type]))
+        print(top_spans)
 
 
     top_spans = [sorted(top_span,reverse=True,key=lambda x:x[3]) for top_span in top_spans]
@@ -387,4 +394,4 @@ class BiaffineNERModel():
 
 
       pred_ners = self.get_pred_ner(example["text"], candidate_ner_scores,is_flat_ner)
-      print(pred_ners)
+     #print(pred_ners)
