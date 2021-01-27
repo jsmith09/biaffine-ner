@@ -373,7 +373,7 @@ class BiaffineNERModel():
       feed_dict = {i:t for i,t in zip(self.input_tensors, tensorized_example)}
       candidate_ner_scores = session.run(self.predictions, feed_dict=feed_dict)
 
-      num_words += sum(len(tok) for tok in example["sentences"])
+      num_words += sum(len(tok) for tok in example["text"])
 
 
       gold_ners = set([(sid,s,e, self.ner_maps[t]) for sid, ner in enumerate(example['ners']) for s,e,t in ner])
