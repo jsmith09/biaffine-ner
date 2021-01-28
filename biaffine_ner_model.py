@@ -8,12 +8,14 @@ import numpy as np
 from collections import defaultdict
 #import tensorflow as tf
 import tensorflow.compat.v1 as tf
+import pandas as pd
 
 tf.compat.v1.disable_v2_behavior()
 import h5py
 
 import util
 
+from tabulate import tabulate
 
 class BiaffineNERModel():
   def __init__(self, config):
@@ -263,7 +265,7 @@ class BiaffineNERModel():
       if type > 0:
         sid, s,e = candidates[i]
         top_spans[sid].append((s,e,type,span_scores[i,type]))
-        print(top_spans)
+        #print(top_spans)
 
 
     top_spans = [sorted(top_span,reverse=True,key=lambda x:x[3]) for top_span in top_spans]
@@ -379,6 +381,8 @@ class BiaffineNERModel():
 
     is_flat_ner = 'flat_ner' in self.config and self.config['flat_ner']
 
+    spans_df = pd.DataFrame(columns = ['tokens', 'preds', 'observation_number'])
+
     for example_num, (tensorized_example, example) in enumerate(self.eval_data):
       feed_dict = {i:t for i,t in zip(self.input_tensors, tensorized_example)}
       candidate_ner_scores = session.run(self.predictions, feed_dict=feed_dict)
@@ -387,4 +391,28 @@ class BiaffineNERModel():
 
 
       pred_ners = self.get_pred_ner(example["sentences"], candidate_ner_scores,is_flat_ner)
-      #print(pred_ners)
+    
+      tokens = []
+      sentence = example["sentences"][0]
+      preds = []
+      obs = []
+      obs_num = "observation_number_" + str(example_num)
+
+      for sid, s, e, t in pred_ners:
+        obs.append(obs_num)
+        tokens.append((sentence[s]))
+        if t == 1:
+            preds.append("O")
+        if t == 2:
+            preds.append("TOX")
+
+      new_row = pd.DataFrame([[tokens, preds, obs]], columns=['tokens', 'preds', 'observation_number'])
+      spans_df = spans_df.append(new_row)
+    
+    spans_df.to_csv('toxic_spans.csv')
+
+
+      
+
+      
+
