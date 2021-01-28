@@ -106,12 +106,8 @@ class BiaffineNERModel():
     return lm_emb
 
   def tensorize_example(self, example, is_training, is_predict=False):
-    if not is_predict:
-        ners = example["ners"]
-    if is_predict:
-      sentences = example["text"]
-    else:
-      sentences = example["sentences"]
+    ners = example["ners"]
+    sentences = example["sentences"]
 
     max_sentence_length = max(len(s) for s in sentences)
     max_word_length = max(max(max(len(w) for w in s) for s in sentences), max(self.config["filter_widths"]))
@@ -133,10 +129,7 @@ class BiaffineNERModel():
 
     tokens = np.array(tokens)
 
-    if is_predict:
-      doc_key = example["observation_number"]
-    else:
-      doc_key = example["doc_key"]
+    doc_key = example["doc_key"]
 
     lm_emb = self.load_lm_embeddings(doc_key)
 
@@ -304,7 +297,7 @@ class BiaffineNERModel():
     if self.eval_data is None:
       def load_line(line):
         example = json.loads(line)
-        return self.tensorize_example(example, is_training=False, is_predict=True), example
+        return self.tensorize_example(example, is_training=False), example
 
       with open(self.config["eval_path"]) as f:
         self.eval_data = [load_line(l) for l in f.readlines()]
@@ -390,8 +383,8 @@ class BiaffineNERModel():
       feed_dict = {i:t for i,t in zip(self.input_tensors, tensorized_example)}
       candidate_ner_scores = session.run(self.predictions, feed_dict=feed_dict)
 
-      num_words += sum(len(tok) for tok in example["text"])
+      num_words += sum(len(tok) for tok in example["sentences"])
 
 
-      pred_ners = self.get_pred_ner(example["text"], candidate_ner_scores,is_flat_ner)
-     #print(pred_ners)
+      pred_ners = self.get_pred_ner(example["sentences"], candidate_ner_scores,is_flat_ner)
+      #print(pred_ners)
